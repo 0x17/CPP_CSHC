@@ -7,7 +7,7 @@
 int main() {
 	const auto instances = Utils::parseCsvValues("dataforcshc.csv");
 
-	const auto res = Utils::trainValidationSplit(instances, 0.9, 42, true);
+	const auto res = Utils::trainValidationSplit(instances, 0.9, 42);
 	const auto train = res.first;
 	const auto validation = res.second;
 

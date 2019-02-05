@@ -205,14 +205,16 @@ Matrix<float> Utils::parseCsvValues(const string& filename) {
 	return data;
 }
 
-std::pair<Matrix<float>, Matrix<float>> Utils::trainValidationSplit(const Matrix<float> &instances, float trainPercentage, int seed, bool shuffle) {
-	// TODO: Implement shuffle
-	int ninstances = instances.getM();
+std::pair<Matrix<float>, Matrix<float>> Utils::trainValidationSplit(const Matrix<float> &instances, float trainPercentage, int seed) {
+	std::srand(seed);
+	vector<vector<float>> rows = Utils::constructVector<vector<float>>(instances.getM(), [&instances](int i) { return instances.row(i); });
+	std::random_shuffle(rows.begin(), rows.end());
+	int ninstances = rows.size();
 	int divInstanceIndex = (int)round((float)ninstances * trainPercentage);
-	int nfeatures = instances.getN();
+	int nfeatures = rows[0].size();
 	std::pair<Matrix<float>, Matrix<float>> res = make_pair<Matrix<float>, Matrix<float>>(
-			Matrix<float>(divInstanceIndex,nfeatures,[&instances](int i, int j) { return instances(i,j); }),
-			Matrix<float>(ninstances-divInstanceIndex,nfeatures,[&instances,divInstanceIndex](int i, int j) { return instances(i+divInstanceIndex,j);})
+			Matrix<float>(divInstanceIndex,nfeatures,[&rows](int i, int j) { return rows[i][j]; }),
+			Matrix<float>(ninstances-divInstanceIndex,nfeatures,[&rows,divInstanceIndex](int i, int j) { return rows[i+divInstanceIndex][j];})
 	);
 	return res;
 }
