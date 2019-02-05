@@ -189,4 +189,8 @@ namespace Utils {
 
 	std::vector<std::string> split(const std::string &s, char sep, char skipchar = 0);
 	Matrix<float> parseCsvValues(const std::string &filename);
+
+	std::pair<Matrix<float>, Matrix<float>> trainValidationSplit(const Matrix<float> &instances, float trainPercentage, int seed, bool shuffle);
+
+	float accuracy(const std::vector<int> &actualYs, const std::vector<int> &predYs);
 }

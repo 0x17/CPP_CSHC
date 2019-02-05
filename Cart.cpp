@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include "Cart.hpp"
+#include "Utils.h"
 
 int splitCost(const Matrix<float> &instances, int featureIndex, float splitValue) {
 	int sleft = 0, sright = 0, sleftCard = 0, srightCard = 0;
@@ -17,26 +18,6 @@ int splitCost(const Matrix<float> &instances, int featureIndex, float splitValue
 	int nmisclassLeft = sleft > (int)ceil((float)sleftCard / 2.0f) ? sleftCard-sleft : sleft;
 	int nmisclassRight = sright > (int)ceil((float)srightCard / 2.0f) ? srightCard-sright : sright;
 	return nmisclassLeft+nmisclassRight;
-}
-
-Matrix<float> leftPart(const Matrix<float> &instances, const SplitChoice &sc) {
-	std::vector<std::vector<float>> outInstances;
-	for(int i=0; i<instances.getM(); i++) {
-		if(instances(i,sc.featureIndex) < sc.value) {
-			outInstances.push_back(instances.row(i));
-		}
-	}
-	return outInstances;
-}
-
-Matrix<float> rightPart(const Matrix<float> &instances, const SplitChoice &sc) {
-	std::vector<std::vector<float>> outInstances;
-	for(int i=0; i<instances.getM(); i++) {
-		if(instances(i,sc.featureIndex) >= sc.value) {
-			outInstances.push_back(instances.row(i));
-		}
-	}
-	return outInstances;
 }
 
 SplitResult cheapestSplit(const Matrix<float> &instances) {
@@ -58,7 +39,16 @@ SplitResult cheapestSplit(const Matrix<float> &instances) {
 	}
 
 	std::cout << "New best split feature=" << sc.featureIndex << " value=" << sc.value << std::endl;
-	return SplitResult(sc.featureIndex, sc.value, bestCost, leftPart(instances, sc), rightPart(instances, sc));
+
+	const auto leftPart = instances.filter([&sc](const std::vector<float> &row) {
+		return row[sc.featureIndex] < sc.value;
+	});
+
+	const auto rightPart = instances.filter([&sc](const std::vector<float> &row) {
+		return row[sc.featureIndex] >= sc.value;
+	});
+
+	return SplitResult(sc.featureIndex, sc.value, bestCost, leftPart, rightPart);
 }
 
 int dominatingClass(const Matrix<float>& instances) {
@@ -105,4 +95,10 @@ int predictWithTree(const Node *root, const std::vector<float> &instance) {
 			return predictWithTree(root->right, instance);
 		}
 	}
+}
+
+std::vector<int> predictWithTree(const Node *root, const Matrix<float> &instances) {
+	return Utils::constructVector<int>(instances.getM(), [&root,&instances](int i) {
+		return predictWithTree(root, instances.row(i));
+	});
 }

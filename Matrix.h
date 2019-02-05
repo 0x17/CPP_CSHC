@@ -148,4 +148,21 @@ public:
 		}
 		return out.str();
 	}
+
+	template<class Func>
+	Matrix<T> filter(Func f) const {
+		std::vector<std::vector<T>> rows;
+		for(int i=0; i<getM(); i++) {
+			const auto r = row(i);
+			if(f(r)) {
+				rows.push_back(r);
+			}
+		}
+
+		if(rows.empty()) {
+			return Matrix<T>(0, 0);
+		}
+
+		return rows;
+	}
 };

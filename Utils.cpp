@@ -195,7 +195,7 @@ Matrix<float> Utils::parseCsvValues(const string& filename) {
 	vector<vector<float>> data(lines.size()-2);
 	int ctr = 0;
 	for(const auto &line : lines) {
-		if(line.size() <= 0) continue;
+		if(line.empty()) continue;
 		if(ctr > 0) {
 			const vector<string> parts = split(line, ',');
 			data[ctr-1] = Utils::constructVector<float>(parts.size(), [&parts](int i) { return stof(parts[i]); });
@@ -203,6 +203,29 @@ Matrix<float> Utils::parseCsvValues(const string& filename) {
 		ctr++;
 	}
 	return data;
+}
+
+std::pair<Matrix<float>, Matrix<float>> Utils::trainValidationSplit(const Matrix<float> &instances, float trainPercentage, int seed, bool shuffle) {
+	// TODO: Implement shuffle
+	int ninstances = instances.getM();
+	int divInstanceIndex = (int)round((float)ninstances * trainPercentage);
+	int nfeatures = instances.getN();
+	std::pair<Matrix<float>, Matrix<float>> res = make_pair<Matrix<float>, Matrix<float>>(
+			Matrix<float>(divInstanceIndex,nfeatures,[&instances](int i, int j) { return instances(i,j); }),
+			Matrix<float>(ninstances-divInstanceIndex,nfeatures,[&instances,divInstanceIndex](int i, int j) { return instances(i+divInstanceIndex,j);})
+	);
+	return res;
+}
+
+float Utils::accuracy(const std::vector<int> &actualYs, const std::vector<int> &predYs) {
+	int ncorrect = 0;
+	int ntotal = actualYs.size();
+	for(int i=0; i<ntotal; i++) {
+		if(actualYs[i] == predYs[i]) {
+			ncorrect++;
+		}
+	}
+	return (float)ncorrect / (float)ntotal;
 }
 
 

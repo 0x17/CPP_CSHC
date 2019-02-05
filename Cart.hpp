@@ -31,3 +31,4 @@ struct Node {
 Node* buildTree(const Matrix<float> &instances);
 
 int predictWithTree(const Node *root, const std::vector<float> &instance);
+std::vector<int> predictWithTree(const Node *root, const Matrix<float> &instances);
