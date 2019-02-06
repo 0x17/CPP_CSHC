@@ -194,4 +194,5 @@ namespace Utils {
 	trainValidationSplit(const Matrix<float> &instances, float trainPercentage, int seed, bool shuffle);
 
 	float accuracy(const std::vector<int> &actualYs, const std::vector<int> &predYs);
+
 }

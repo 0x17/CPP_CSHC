@@ -11,4 +11,4 @@ add_executable(CPP_CSHC
 		main.cpp
 		Matrix.h
 		Utils.cpp
-		Utils.h)
+		Utils.h Bagging.cpp Bagging.hpp)
