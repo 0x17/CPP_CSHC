@@ -205,10 +205,12 @@ Matrix<float> Utils::parseCsvValues(const string& filename) {
 	return data;
 }
 
-std::pair<Matrix<float>, Matrix<float>> Utils::trainValidationSplit(const Matrix<float> &instances, float trainPercentage, int seed) {
+std::pair<Matrix<float>, Matrix<float>>
+Utils::trainValidationSplit(const Matrix<float> &instances, float trainPercentage, int seed, bool shuffle) {
 	std::srand(seed);
 	vector<vector<float>> rows = Utils::constructVector<vector<float>>(instances.getM(), [&instances](int i) { return instances.row(i); });
-	std::random_shuffle(rows.begin(), rows.end());
+	if(shuffle)
+		std::random_shuffle(rows.begin(), rows.end());
 	int ninstances = rows.size();
 	int divInstanceIndex = (int)round((float)ninstances * trainPercentage);
 	int nfeatures = rows[0].size();

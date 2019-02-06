@@ -56,27 +56,28 @@ int dominatingClass(const Matrix<float>& instances) {
 	int acc = 0;
 	for (int i = 0; i < instances.getM(); i++)
 		acc += (int)instances(i, lastIx);
-	return acc > static_cast<int>(round(static_cast<double>(instances.getM()) / 2.0)) ? 1 : 0;
+	const int threshold = static_cast<int>(round(static_cast<double>(instances.getM()) / 2.0));
+	return acc > threshold ? 1 : 0;
 }
 
 Node *buildTree(const Matrix<float>& instances) {
-	const auto terminalNode = [](int v, int cost) {
+	const auto leafNode = [](int v, int cost) {
 		return new Node(-1, v, cost, nullptr, nullptr);
 	};
 
 	SplitResult s = cheapestSplit(instances);
-	if(s.cost == 0.0) {
+	if(s.cost == 0) {
 		int dcl = dominatingClass(s.left);
 		int dcr = dominatingClass(s.right);
-		if (dcl == dcr) return terminalNode(dcl, s.cost);
-		return new Node(s.featureIndex, s.value, s.cost, terminalNode(dcl, s.cost), terminalNode(dcr, s.cost));
+		if (dcl == dcr) return leafNode(dcl, s.cost);
+		return new Node(s.featureIndex, s.value, s.cost, leafNode(dcl, 0), leafNode(dcr, 0));
 	}
 
 	int lsize = s.left.getM();
 	int rsize = s.right.getM();
 
-	if(lsize == 0) return terminalNode(dominatingClass(s.left), s.cost);
-	if(rsize == 0) return terminalNode(dominatingClass(s.right), s.cost);
+	if(lsize == 0) return leafNode(dominatingClass(s.right), s.cost);
+	if(rsize == 0) return leafNode(dominatingClass(s.left), s.cost);
 
 	return new Node(s.featureIndex, s.value, s.cost, buildTree(s.left), buildTree(s.right));
 }

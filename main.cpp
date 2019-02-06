@@ -7,13 +7,11 @@
 int main() {
 	const auto instances = Utils::parseCsvValues("dataforcshc.csv");
 
-	const auto res = Utils::trainValidationSplit(instances, 0.9, 42);
+	const auto res = Utils::trainValidationSplit(instances, 0.9, 23, true);
 	const auto train = res.first;
 	const auto validation = res.second;
 
 	Node *root = buildTree(train);
-	/*int predY = predictWithTree(root, instances.row(0));
-	std::cout << "Predicted class = " << predY << std::endl;*/
 
 	const auto predYs = predictWithTree(root, validation);
 	int classIndex = validation.getN()-1;
