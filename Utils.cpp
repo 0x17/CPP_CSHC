@@ -5,11 +5,10 @@
 #include <cmath>
 #include <regex>
 #include <fstream>
-#include <iostream>
+#include <cassert>
+#include <numeric>
 
 #include "Utils.h"
-#include <cassert>
-
 
 using namespace std;
 
@@ -60,7 +59,7 @@ vector<int> Utils::extractIntsFromLine(const string &line) {
 void Utils::serializeSchedule(const vector<int> &sts, const string &filename) {
 	std::ofstream f(filename);
 	if(f.is_open()) {
-		for (int j = 0; j < sts.size(); j++) {
+		for (unsigned int j = 0; j < sts.size(); j++) {
 			f << (j + 1) << "->" << sts[j];
 			if (j < sts.size() - 1) f << "\n";
 		}
@@ -76,7 +75,7 @@ void Utils::serializeProfit(float profit, const string &filename) {
 int Utils::pickWithDistribution(vector<float> &probs, float q) {
 	float cumulatedProbs = 0.0f;
 	int lastPossibleIx = 0;
-	for(int i = 0; i < probs.size(); i++) {
+	for(unsigned int i = 0; i < probs.size(); i++) {
 		if (probs[i] > 0.0f && q >= cumulatedProbs && q <= cumulatedProbs + probs[i])
 			return i;
 		cumulatedProbs += probs[i];
@@ -100,18 +99,6 @@ void Utils::spitAppend(const string &s, const string &filename) {
         f << s;
         f.close();
     }
-}
-
-
-string Utils::formattedNow() {
-	time_t rawtime;
-	struct tm* timeinfo;
-	char buffer[80];
-	time(&rawtime);
-	timeinfo = localtime(&rawtime);
-	strftime(buffer, 80, "%d-%m-%Y %I:%M:%S", timeinfo);
-	string str(buffer);
-	return str;
 }
 
 
@@ -140,8 +127,8 @@ float Utils::average(const std::vector<float> &values) {
 
 int Utils::sum(const std::vector<int> &values) {
 	int acc = 0;
-	for(int i=0; i<values.size(); i++)
-		acc += values[i];
+	for(int value : values)
+		acc += value;
 	return acc;
 }
 
@@ -149,7 +136,7 @@ float Utils::variance(const std::vector<float> &values) {
 	if(values.size() <= 1) return 0.0f;
 	const float mean = average(values);
 	float acc = 0.0f;
-	for(int v : values) {
+	for(float v : values) {
 		acc += (v - mean)*(v - mean);
 	}
 	return acc / static_cast<float>(values.size() - 1);
@@ -157,7 +144,7 @@ float Utils::variance(const std::vector<float> &values) {
 
 Matrix<char> Utils::transitiveClosure(const Matrix<char> & mx) {
 	assert(mx.getM() == mx.getN());
-	int n = mx.getN();
+	const int n = mx.getN();
 	Matrix<char> tc = mx;
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < n; j++)
@@ -166,13 +153,13 @@ Matrix<char> Utils::transitiveClosure(const Matrix<char> & mx) {
 	return tc;
 }
 
-vector<string> Utils::split(const string &s, char sep, char skip_char) {
+vector<string> Utils::split(const string &s, char sep, char skipChar) {
 	vector<string> parts;
 	string part;
 	for(auto i = s.begin(); i != s.end(); ++i) {
 		const char c = *i;
 
-		if (skip_char != 0 && c == skip_char)
+		if (skipChar != 0 && c == skipChar)
 			continue;
 
 		if(c == sep) {
@@ -211,9 +198,9 @@ Utils::trainValidationSplit(const Matrix<float> &instances, float trainPercentag
 	vector<vector<float>> rows = Utils::constructVector<vector<float>>(instances.getM(), [&instances](int i) { return instances.row(i); });
 	if(shuffle)
 		std::random_shuffle(rows.begin(), rows.end());
-	int ninstances = rows.size();
-	int divInstanceIndex = (int)round((float)ninstances * trainPercentage);
-	int nfeatures = rows[0].size();
+	const int ninstances = rows.size();
+	const int divInstanceIndex = (int)round((float)ninstances * trainPercentage);
+	const int nfeatures = rows[0].size();
 	std::pair<Matrix<float>, Matrix<float>> res = make_pair<Matrix<float>, Matrix<float>>(
 			Matrix<float>(divInstanceIndex,nfeatures,[&rows](int i, int j) { return rows[i][j]; }),
 			Matrix<float>(ninstances-divInstanceIndex,nfeatures,[&rows,divInstanceIndex](int i, int j) { return rows[i+divInstanceIndex][j];})
@@ -223,13 +210,13 @@ Utils::trainValidationSplit(const Matrix<float> &instances, float trainPercentag
 
 float Utils::accuracy(const std::vector<int> &actualYs, const std::vector<int> &predYs) {
 	int ncorrect = 0;
-	int ntotal = actualYs.size();
+	const int ntotal = actualYs.size();
 	for(int i=0; i<ntotal; i++) {
 		if(actualYs[i] == predYs[i]) {
 			ncorrect++;
 		}
 	}
-	return (float)ncorrect / (float)ntotal;
+	return static_cast<float>(ncorrect) / static_cast<float>(ntotal);
 }
 
 

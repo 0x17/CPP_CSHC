@@ -23,7 +23,7 @@ int main() {
 	if(useEnsemble) {
 		const int numFeatures = static_cast<const int>(round(sqrt(train.getN() - 1.0f) * 0.7f));
 		const int subSampleSize = static_cast<const int>(round(0.7f * train.getM()));
-		const auto ensemble = createEnsemble(8, instances, numFeatures, subSampleSize);
+		const auto ensemble = createEnsemble(500, instances, numFeatures, subSampleSize);
 		predYs = predictWithEnsemble(ensemble, validation);
 		for(Node *root : ensemble) {
 			delete root;

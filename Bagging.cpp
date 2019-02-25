@@ -10,10 +10,9 @@
 std::vector<int> randomIndices(int count, int n) {
 	std::vector<int> res(static_cast<unsigned long>(count));
 	int i=0;
-	bool alreadyChosen;
 	while(i < count) {
-		int ix = Utils::randRangeIncl(0, n-1);
-		alreadyChosen = false;
+		const int ix = Utils::randRangeIncl(0, n-1);
+		bool alreadyChosen = false;
 		for(int j=0; j<i; j++) {
 			if(res[j] == ix) {
 				alreadyChosen = true;
@@ -38,13 +37,13 @@ Matrix<float> extractSubSample(const Matrix<float> &instances, const std::vector
 
 std::list<Node *> createEnsemble(int numTrees, const Matrix<float> &instances, int numFeatures, int subsampleSize) {
 	std::list<Node *> ensemble;
-	int instanceCount = instances.getM();
-	int featureCount = instances.getN()-1;
+	const int instanceCount = instances.getM();
+	const int featureCount = instances.getN()-1;
 	for(int i=0; i<numTrees; i++) {
 		std::vector<int> selectedFeatures = randomIndices(numFeatures, featureCount);
 		selectedFeatures.push_back(featureCount);
-		std::vector<int> selectedInstances = randomIndices(subsampleSize, instanceCount);
-		Matrix<float> subsample = extractSubSample(instances, selectedInstances, selectedFeatures);
+		const std::vector<int> selectedInstances = randomIndices(subsampleSize, instanceCount);
+		const Matrix<float> subsample = extractSubSample(instances, selectedInstances, selectedFeatures);
 		ensemble.push_back(buildTree(subsample));
 		std::cout << "Added tree nr. " << (i+1) << std::endl;
 	}

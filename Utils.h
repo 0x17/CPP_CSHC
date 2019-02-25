@@ -7,9 +7,7 @@
 #include <cstdlib>
 #include <vector>
 #include <list>
-#include <fstream>
 #include <chrono>
-#include <numeric>
 
 #include "Matrix.h"
 
@@ -132,8 +130,6 @@ namespace Utils {
 		return b ? 1 : 0;
 	}
 
-	std::string formattedNow();
-
 	template<class T, class Pred>
 	int indexOf(std::vector<T> elems, Pred p) {
 		for(int i=0; i<elems.size(); i++) {
@@ -187,7 +183,7 @@ namespace Utils {
 		return acc;
 	}
 
-	std::vector<std::string> split(const std::string &s, char sep, char skipchar = 0);
+	std::vector<std::string> split(const std::string &s, char sep, char skipChar = 0);
 	Matrix<float> parseCsvValues(const std::string &filename);
 
 	std::pair<Matrix<float>, Matrix<float>>

@@ -155,11 +155,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bagging.cpp" />
     <ClCompile Include="Cart.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bagging.hpp" />
     <ClInclude Include="Cart.hpp" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Utils.h" />
