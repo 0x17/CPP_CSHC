@@ -3,6 +3,14 @@
 #include "Cart.hpp"
 #include "Utils.h"
 
+inline int domClass(int sum, int len) {
+	return sum >= (int)ceil((float)len / 2.0f);
+}
+
+inline int numMisclass(int domClass, int sum, int len) {
+	return domClass ? len - sum : sum;
+}
+
 int splitCost(const Matrix<float> &instances, int featureIndex, float splitValue) {
 	int sleft = 0, sright = 0, sleftCard = 0, srightCard = 0;
 	const int classIndex = instances.getN()-1;
@@ -15,9 +23,8 @@ int splitCost(const Matrix<float> &instances, int featureIndex, float splitValue
 			srightCard++;
 		}
 	}
-	const int nmisclassLeft = sleft > (int)ceil((float)sleftCard / 2.0f) ? sleftCard-sleft : sleft;
-	const int nmisclassRight = sright > (int)ceil((float)srightCard / 2.0f) ? srightCard-sright : sright;
-	return nmisclassLeft + nmisclassRight;
+	return numMisclass(domClass(sleft, sleftCard), sleft, sleftCard) +
+			numMisclass(domClass(sright, srightCard), sright, srightCard);
 }
 
 SplitResult cheapestSplit(const Matrix<float> &instances) {
@@ -27,7 +34,7 @@ SplitResult cheapestSplit(const Matrix<float> &instances) {
 
 	for(int featureIndex = 0; featureIndex<nfeatures; featureIndex++) {
 		for(int i = 0; i<instances.getM(); i++) {
-			const float v = instances(featureIndex, i);
+			const float v = instances(i, featureIndex);
 			const int cost = splitCost(instances, featureIndex, v);
 			if(cost <= bestCost) {
 				bestCost = cost;
@@ -57,7 +64,7 @@ int dominatingClass(const Matrix<float>& instances) {
 	for (int i = 0; i < instances.getM(); i++)
 		acc += static_cast<int>(instances(i, lastIx));
 	const int threshold = static_cast<int>(round(static_cast<double>(instances.getM()) / 2.0));
-	return acc > threshold ? 1 : 0;
+	return acc >= threshold ? 1 : 0;
 }
 
 Node *buildTree(const Matrix<float>& instances) {
