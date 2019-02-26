@@ -58,21 +58,23 @@ int main() {
 	function<void(void)> freeFunc;
 
 	if(useEnsemble) {
-		//const int numFeatures = static_cast<const int>(round(sqrt(train.getN() - 1.0f) * 0.7f));
-		//const int subSampleSize = static_cast<const int>(round(0.7f * train.getM()));
-		//const int numTrees = 500;
+		const int numFeatures = static_cast<const int>(round(sqrt(train.getN() - 1.0f) * 0.7f));
+		const int subSampleSize = static_cast<const int>(round(0.7f * train.getM()));
+		const int numTrees = 500;
 
-		const int numFeatures = 80;
+		/*const int numFeatures = 80;
 		const int subSampleSize = 1800;
-		const int numTrees = 8;
+		const int numTrees = 8;*/
 
 		const auto ensemble = createEnsemble(numTrees, instances, numFeatures, subSampleSize);
-		predFunc = [&ensemble](const Matrix<float> &samples) { return predictWithEnsemble(ensemble, samples); };
+		const list<Node *> *ensembleCopy = new list<Node *>(ensemble);
+		predFunc = [ensembleCopy](const Matrix<float> &samples) { return predictWithEnsemble(*ensembleCopy, samples); };
 
-		freeFunc = [&ensemble]() {
-			for(Node *root : ensemble) {
+		freeFunc = [ensembleCopy]() {
+			for(Node *root : *ensembleCopy) {
 				delete root;
 			}
+			delete ensembleCopy;
 		};
 	} else {
 		Node *root = buildTree(train);

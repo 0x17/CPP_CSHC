@@ -40,12 +40,12 @@ SplitResult cheapestSplit(const Matrix<float> &instances) {
 				bestCost = cost;
 				sc.featureIndex = featureIndex;
 				sc.value = v;
-				//std::cout << "New incumbent with cost " << cost << std::endl;
+				std::cout << "New incumbent with cost " << cost << std::endl;
 			}
 		}
 	}
 
-	//std::cout << "New best split feature=" << sc.featureIndex << " value=" << sc.value << std::endl;
+	std::cout << "New best split feature=" << sc.featureIndex << " value=" << sc.value << std::endl;
 
 	const auto leftPart = instances.filter([&sc](const std::vector<float> &row) {
 		return row[sc.featureIndex] < sc.value;
